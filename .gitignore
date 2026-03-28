@@ -22,3 +22,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment & API keys
+.env
+firebase_service_account.json
+firebase_service_account.json.json
+Backend/.env
+Backend/firebase_service_account.json
+
+# Python Virtual Environments
+.venv/
+venv/
+__pycache__/
+*.pyc

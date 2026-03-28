@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { Home, Github, Linkedin } from "lucide-react";
+import Logo from "./Logo";
 
 const Footer = () => (
   <footer className="border-t border-border bg-card py-12">
     <div className="container grid gap-8 sm:grid-cols-3">
       <div>
         <Link to="/" className="flex items-center gap-2 font-heading text-lg font-bold text-primary">
-          <Home className="h-5 w-5" />
-          HouseAI
+          <Logo className="h-6 w-auto" />
+          NestPredict
         </Link>
         <p className="mt-2 text-sm text-muted-foreground">AI-powered house price predictions for smarter real estate decisions.</p>
       </div>

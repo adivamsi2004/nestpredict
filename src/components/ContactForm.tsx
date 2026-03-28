@@ -14,7 +14,17 @@ const ContactForm = () => {
       toast.error("Please fill in all fields");
       return;
     }
-    toast.success("Message sent! We'll get back to you soon.");
+
+    const whatsappText = `Hello, I am contacting you from NestPredict:
+*Name*: ${form.name}
+*Email*: ${form.email}
+
+*Message*: 
+${form.message}`;
+
+    window.open(`https://wa.me/9182475253?text=${encodeURIComponent(whatsappText)}`, '_blank');
+
+    toast.success("Redirecting to WhatsApp...");
     setForm({ name: "", email: "", message: "" });
   };
 
