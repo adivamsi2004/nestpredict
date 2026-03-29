@@ -4,3 +4,8 @@ scikit-learn
 pandas
 joblib
 pydantic
+google-generativeai
+python-dotenv
+requests
+firebase-admin
+pymongo
