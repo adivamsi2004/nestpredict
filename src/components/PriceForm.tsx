@@ -54,7 +54,8 @@ const PriceForm = () => {
     setPrice(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/predict", {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -77,7 +78,7 @@ const PriceForm = () => {
       setPrice(data.price);
     } catch (error) {
       console.error(error);
-      alert("Failed to get prediction from the backend. Make sure the backend is running on port 8000.");
+      alert(`Failed to get prediction passing to backend. Please check your backend is deployed properly or VITE_API_BASE_URL is set in Vercel.`);
     } finally {
       setLoading(false);
     }

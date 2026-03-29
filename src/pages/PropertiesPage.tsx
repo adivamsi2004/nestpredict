@@ -72,6 +72,116 @@ const initialProperties = [
     area: 600,
     image: "https://images.unsplash.com/photo-1502672260266-1c1e506ab68d?auto=format&fit=crop&q=80",
   },
+  {
+    id: 7,
+    title: "Riverside Family Home",
+    type: "House",
+    location: "Ongole",
+    price: 7800000,
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 1600,
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 8,
+    title: "Elegant Townhouse",
+    type: "House",
+    location: "Ongole",
+    price: 11000000,
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 2200,
+    image: "https://images.unsplash.com/photo-1600607687931-570a2c5ea60f?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 9,
+    title: "Sunset Boulevard Apartment",
+    type: "Apartment",
+    location: "Nellore",
+    price: 6200000,
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 1100,
+    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 10,
+    title: "Tranquil Oasis Villa",
+    type: "Villa",
+    location: "Nellore",
+    price: 15500000,
+    bedrooms: 4,
+    bathrooms: 4,
+    area: 3200,
+    image: "https://images.unsplash.com/photo-1600566752355-32e0dd79afaa?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 11,
+    title: "City Center Loft",
+    type: "Apartment",
+    location: "Kurnool",
+    price: 5400000,
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 800,
+    image: "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 12,
+    title: "Heritage Mansion",
+    type: "Villa",
+    location: "Kurnool",
+    price: 28000000,
+    bedrooms: 5,
+    bathrooms: 5,
+    area: 4500,
+    image: "https://images.unsplash.com/photo-1600566753086-00f18efc2291?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 13,
+    title: "Green Meadows Estate",
+    type: "House",
+    location: "Kurnool",
+    price: 8900000,
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 1900,
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 14,
+    title: "Hilltop Panorama Villa",
+    type: "Villa",
+    location: "Nandyala",
+    price: 14500000,
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 2800,
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4ea0d?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 15,
+    title: "Orchard Farmhouse",
+    type: "House",
+    location: "Nandyala",
+    price: 7200000,
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 1500,
+    image: "https://images.unsplash.com/photo-1588880331179-bc9b9c4aadcb?auto=format&fit=crop&q=80",
+  },
+  {
+    id: 16,
+    title: "Lakeside Retreat",
+    type: "House",
+    location: "Nandyala",
+    price: 10500000,
+    bedrooms: 3,
+    bathrooms: 3,
+    area: 2100,
+    image: "https://images.unsplash.com/photo-1528909514045-2f446ecbc7ea?auto=format&fit=crop&q=80",
+  }
 ];
 
 const PropertiesPage = () => {
@@ -83,7 +193,8 @@ const PropertiesPage = () => {
     setAssessingId(prop.id);
     const toastId = toast.loading(`Assessing ${prop.title} with Gemini AI...`);
     try {
-      const response = await fetch("http://127.0.0.1:8000/assess", {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${API_BASE_URL}/assess`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -118,7 +229,8 @@ const PropertiesPage = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/properties");
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+        const response = await fetch(`${API_BASE_URL}/properties`);
         if (response.ok) {
           const data = await response.json();
           // Merge db properties with initial mock properties
