@@ -9,7 +9,7 @@ const ContactPage = () => (
           <Mail className="h-6 w-6" />
         </div>
         <h1 className="mb-3 font-heading text-3xl font-bold sm:text-4xl">Get In Touch</h1>
-        <p className="text-muted-foreground">Have questions or feedback? We'd love to hear from you.</p>
+        <p className="text-muted-foreground">Have questions or feedback? We would love to hear from you.</p>
       </div>
       <ContactForm />
     </div>
