@@ -10,7 +10,7 @@ const AboutSection = () => (
   <section id="about" className="bg-card py-20">
     <div className="container">
       <div className="mx-auto mb-14 max-w-2xl text-center">
-        <h2 className="mb-4 font-heading text-3xl font-bold sm:text-4xl">Why Choose HouseAI?</h2>
+        <h2 className="mb-4 font-heading text-3xl font-bold sm:text-4xl">Why Choose NestPredict?</h2>
         <p className="text-muted-foreground">
           Traditional property valuation is slow and subjective. Our machine learning model removes guesswork, giving buyers, sellers, and agents a clear picture of market value.
         </p>

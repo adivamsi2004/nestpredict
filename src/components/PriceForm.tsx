@@ -53,17 +53,35 @@ const PriceForm = () => {
     setLoading(true);
     setPrice(null);
 
-    // Simulate API call (replace with real POST /predict)
-    await new Promise((r) => setTimeout(r, 1200));
-    const base = Number(form.area) * 150;
-    const locationMult = form.location === "Downtown" ? 1.4 : form.location === "Suburban" ? 1.1 : 0.85;
-    const condMult = form.condition === "Excellent" ? 1.2 : form.condition === "Good" ? 1.0 : 0.8;
-    const garageMult = form.garage === "Yes" ? 1.08 : 1;
-    const bedBonus = Number(form.bedrooms) * 8000;
-    const bathBonus = Number(form.bathrooms) * 5000;
-    const simulated = Math.round((base * locationMult * condMult * garageMult + bedBonus + bathBonus) / 1000) * 1000;
-    setPrice(simulated);
-    setLoading(false);
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+      const response = await fetch(`${API_BASE_URL}/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          area: Number(form.area),
+          bedrooms: Number(form.bedrooms),
+          bathrooms: Number(form.bathrooms),
+          floors: Number(form.floors),
+          yearBuilt: Number(form.yearBuilt),
+          location: form.location,
+          condition: form.condition,
+          garage: form.garage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Prediction failed");
+      }
+
+      const data = await response.json();
+      setPrice(data.price);
+    } catch (error) {
+      console.error(error);
+      alert(`Failed to get prediction passing to backend. Please check your backend is deployed properly or VITE_API_BASE_URL is set in Vercel.`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const set = (key: keyof FormData, val: string) => setForm((p) => ({ ...p, [key]: val }));
@@ -108,9 +126,10 @@ const PriceForm = () => {
             <Select value={form.location} onValueChange={(v) => set("location", v)}>
               <SelectTrigger><SelectValue placeholder="Select location" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="Downtown">Downtown</SelectItem>
-                <SelectItem value="Suburban">Suburban</SelectItem>
-                <SelectItem value="Rural">Rural</SelectItem>
+                <SelectItem value="Ongole">Ongole</SelectItem>
+                <SelectItem value="Nellore">Nellore</SelectItem>
+                <SelectItem value="Kurnool">Kurnool</SelectItem>
+                <SelectItem value="Nandyala">Nandyala</SelectItem>
               </SelectContent>
             </Select>
             {errors.location && <p className="mt-1 text-xs text-destructive">{errors.location}</p>}
@@ -147,7 +166,7 @@ const PriceForm = () => {
         </Button>
       </form>
 
-      {price !== null && <PredictionResult price={price} />}
+      {price !== null && <PredictionResult price={price} location={form.location} />}
     </div>
   );
 };
