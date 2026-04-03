@@ -1,7 +1,7 @@
 import { Brain, Zap, TrendingUp } from "lucide-react";
 
 const cards = [
-  { icon: Brain, title: "Smart Prediction", desc: "Our ML model analyzes dozens of property features to deliver accurate price estimates." },
+  { icon: Brain, title: "Smart Prediction", desc: "Our AI model analyzes dozens of property features to deliver accurate price estimates." },
   { icon: Zap, title: "Real-Time Estimation", desc: "Get instant results powered by optimized algorithms — no waiting required." },
   { icon: TrendingUp, title: "Data-Driven Insights", desc: "Backed by real market data so you can make confident buying and selling decisions." },
 ];
@@ -12,7 +12,7 @@ const AboutSection = () => (
       <div className="mx-auto mb-14 max-w-2xl text-center">
         <h2 className="mb-4 font-heading text-3xl font-bold sm:text-4xl">Why Choose NestPredict?</h2>
         <p className="text-muted-foreground">
-          Traditional property valuation is slow and subjective. Our machine learning model removes guesswork, giving buyers, sellers, and agents a clear picture of market value.
+          Traditional property valuation is slow and subjective. Our AI model removes guesswork, giving buyers, sellers, and agents a clear picture of market value.
         </p>
       </div>
       <div className="grid gap-8 md:grid-cols-3">

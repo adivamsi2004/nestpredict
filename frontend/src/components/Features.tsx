@@ -1,7 +1,7 @@
 import { BarChart3, Layers, Timer, Smile, LineChart } from "lucide-react";
 
 const features = [
-  { icon: BarChart3, title: "ML Price Prediction", desc: "Advanced regression models trained on real estate datasets." },
+  { icon: BarChart3, title: "AI Price Prediction", desc: "Advanced AI models trained on real estate datasets." },
   { icon: Layers, title: "Multi-Feature Analysis", desc: "Considers area, bedrooms, location, condition, and more." },
   { icon: Timer, title: "Instant Estimation", desc: "Results in under a second with our optimized pipeline." },
   { icon: Smile, title: "User-Friendly Interface", desc: "Clean, intuitive design anyone can use." },

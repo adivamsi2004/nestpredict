@@ -20,7 +20,7 @@ const Hero = () => (
           AI Powered House Price Prediction
         </h1>
         <p className="mb-8 max-w-lg text-lg text-primary-foreground/80">
-          Estimate the market value of any property instantly using machine learning.
+          Estimate the market value of any property instantly using AI.
           Data-driven insights for smarter real estate decisions.
         </p>
         <div className="flex flex-wrap gap-4">
