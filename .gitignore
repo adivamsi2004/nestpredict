@@ -7,9 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+frontend/node_modules
+frontend/dist
+frontend/dist-ssr
+backend/server/node_modules
+backend/server/dist
 *.local
 
 # Editor directories and files
@@ -25,13 +27,10 @@ dist-ssr
 
 # Environment & API keys
 .env
+frontend/.env
+backend/.env
+.env.local
+.env.*.local
 firebase_service_account.json
 firebase_service_account.json.json
-Backend/.env
-Backend/firebase_service_account.json
-
-# Python Virtual Environments
-.venv/
-venv/
-__pycache__/
-*.pyc
+backend/server/.env
