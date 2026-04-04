@@ -303,9 +303,25 @@ Area: ${payload.area} sq ft
 Respond ONLY with a single numeric INR value.
 `.trim();
 
-        const imageBase64 = payload.image.includes(",") ? payload.image.split(",")[1] : payload.image;
-        const mimeTypeMatch = payload.image.match(/^data:(.*?);base64,/);
-        const mimeType = mimeTypeMatch?.[1] || "image/jpeg";
+        let imageBase64: string;
+        let mimeType: string;
+
+        if (payload.image.startsWith("http")) {
+          try {
+            const imgRes = await fetch(payload.image);
+            if (!imgRes.ok) throw new Error("Failed to fetch image URL");
+            const buf = await imgRes.arrayBuffer();
+            imageBase64 = Buffer.from(buf).toString("base64");
+            mimeType = imgRes.headers.get("content-type") || "image/jpeg";
+          } catch (e) {
+            console.warn("[api] Failed to fetch remote image, falling back to heuristic:", e);
+            throw e; // Caught by the outer catch
+          }
+        } else {
+          imageBase64 = payload.image.includes(",") ? payload.image.split(",")[1] : payload.image;
+          const mimeTypeMatch = payload.image.match(/^data:(.*?);base64,/);
+          mimeType = mimeTypeMatch?.[1] || "image/jpeg";
+        }
 
         const result = await model.generateContent({
           contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { data: imageBase64, mimeType } }] }],

@@ -1,6 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -21,9 +22,11 @@ import {
 } from "./prediction.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const backendRoot = path.resolve(__dirname, "../..");
-dotenv.config({ path: path.join(backendRoot, ".env") });
-dotenv.config({ path: path.join(backendRoot, "server", ".env") });
+const backendRoot = path.resolve(__dirname, "../../.."); // relative to dist/index.js or src/index.ts
+const env1 = path.join(backendRoot, ".env");
+if (fs.existsSync(env1)) dotenv.config({ path: env1 });
+const env2 = path.join(backendRoot, "server", ".env");
+if (fs.existsSync(env2)) dotenv.config({ path: env2 });
 
 const app = express();
 const port = Number(process.env.PORT) || 8787;
@@ -158,6 +161,11 @@ app.post("/api/contact", async (req, res) => {
 
 /* ——— Start ——— */
 
-app.listen(port, () => {
-  console.log(`[api] listening on http://127.0.0.1:${port}`);
-});
+// Export for Vercel / serverless
+export default app;
+
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`[api] listening on http://127.0.0.1:${port}`);
+  });
+}

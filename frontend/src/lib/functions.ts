@@ -1,7 +1,7 @@
 const apiBase = (): string => {
   const base = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
-  if (!base) {
-    console.warn("VITE_API_BASE_URL is not set; AI requests will fail until you configure it.");
+  if (!base && import.meta.env.DEV) {
+    console.warn("VITE_API_BASE_URL is not set; assuming backend is on same origin.");
   }
   return base;
 };
