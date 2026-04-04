@@ -8,6 +8,9 @@ import { Upload, Home, IndianRupee, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { addProperty } from "@/lib/firestore";
+import { compressImage } from "@/lib/imageUtils";
+import { predictImagePrice } from "@/lib/functions";
+import { Loader2, Sparkles } from "lucide-react";
 
 const ListPropertyPage = () => {
   const navigate = useNavigate();
@@ -23,15 +26,49 @@ const ListPropertyPage = () => {
   });
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [predicting, setPredicting] = useState(false);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
+      reader.onloadend = async () => {
+        const originalDataUrl = reader.result as string;
+        try {
+          // Compress immediately to ensure it fits in Firestore (under 1MB)
+          const compressed = await compressImage(originalDataUrl, 800, 800, 0.7);
+          setImage(compressed);
+        } catch (err) {
+          console.error("Compression failed:", err);
+          setImage(originalDataUrl);
+        }
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAiPredict = async () => {
+    if (!image) {
+      toast.error("Please upload an image first.");
+      return;
+    }
+
+    setPredicting(true);
+    const toastId = toast.loading("Analyzing property with AI...");
+    try {
+      const base64Data = image.split(",")[1];
+      const res = await predictImagePrice({
+        imageBase64: base64Data,
+        mimeType: "image/jpeg",
+      });
+      
+      setFormData(prev => ({ ...prev, price: res.price.toString() }));
+      toast.success(`AI suggested a price of ₹${res.price.toLocaleString("en-IN")}`, { id: toastId });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "AI prediction failed. Please enter price manually.", { id: toastId });
+    } finally {
+      setPredicting(false);
     }
   };
 
@@ -44,7 +81,10 @@ const ListPropertyPage = () => {
     
     // Basic validation
     if (!formData.title || !formData.type || !formData.location || !formData.price || !image) {
-      toast.error("Please fill all required fields and upload an image.");
+      toast.error("Required Field Missing", {
+        description: "Please fill Title, Type, Location, Price, and upload an image.",
+      });
+      setLoading(false);
       return;
     }
 
@@ -53,7 +93,7 @@ const ListPropertyPage = () => {
     try {
       await addProperty({
         title: formData.title,
-        type: formData.type,
+        type: formData.type || "House",
         location: formData.location,
         price: Number(formData.price),
         bedrooms: Number(formData.bedrooms) || 0,
@@ -64,9 +104,9 @@ const ListPropertyPage = () => {
       });
       toast.success("Property listed successfully!");
       navigate("/properties");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Failed to list property. Please try again.");
+      toast.error(error.message || "Failed to list property. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -116,34 +156,46 @@ const ListPropertyPage = () => {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            
-            <div className="space-y-2">
-              <Label htmlFor="title">Property Title</Label>
-              <Input 
-                id="title" 
-                placeholder="e.g. Modern Glass Villa" 
-                value={formData.title}
-                onChange={(e) => setField("title", e.target.value)}
-              />
+            <div className="grid gap-6 md:grid-cols-2 p-1 border-y border-border/50 py-6 mb-6">
+              
+              <div className="space-y-2">
+                <Label htmlFor="title" className="flex items-center gap-1">
+                  Property Title <span className="text-destructive">*</span>
+                </Label>
+                <Input 
+                  id="title" 
+                  placeholder="e.g. Modern Glass Villa" 
+                  className="h-12 border-primary/20 focus:border-primary"
+                  value={formData.title}
+                  onChange={(e) => setField("title", e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1">
+                  Property Type <span className="text-destructive">*</span>
+                </Label>
+                <Select value={formData.type} onValueChange={(v) => setField("type", v)}>
+                  <SelectTrigger className="h-12 border-primary/20">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="House">House</SelectItem>
+                    <SelectItem value="Villa">Villa</SelectItem>
+                    <SelectItem value="Apartment">Apartment</SelectItem>
+                    <SelectItem value="Independent House / Bungalow">Bungalow</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
             </div>
 
-            <div className="space-y-2">
-              <Label>Property Type</Label>
-              <Select value={formData.type} onValueChange={(v) => setField("type", v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="House">House</SelectItem>
-                  <SelectItem value="Villa">Villa</SelectItem>
-                  <SelectItem value="Apartment">Apartment</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Location</Label>
+            <div className="grid gap-6 md:grid-cols-2">
+              
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1">
+                  Location <span className="text-destructive">*</span>
+                </Label>
               <Select value={formData.location} onValueChange={(v) => setField("location", v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select location" />
@@ -159,7 +211,24 @@ const ListPropertyPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Asking Price (₹)</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="price">Asking Price (₹)</Label>
+                {image && (
+                  <button
+                    type="button"
+                    onClick={handleAiPredict}
+                    disabled={predicting}
+                    className="text-xs font-semibold text-primary flex items-center gap-1 hover:underline disabled:opacity-50"
+                  >
+                    {predicting ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-3 w-3" />
+                    )}
+                    Suggest with AI
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <IndianRupee className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input 

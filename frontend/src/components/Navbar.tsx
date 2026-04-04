@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { predictImagePrice } from "@/lib/functions";
+import { compressImage } from "@/lib/imageUtils";
 
 import Logo from "./Logo";
 
@@ -39,10 +40,21 @@ const Navbar = () => {
     setIsUploading(true);
     const toastId = toast.loading("Analyzing image...");
     try {
-      const imageBase64 = await toBase64(file);
+      // Read file as data URL
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Compress image
+      const compressed = await compressImage(dataUrl, 1024, 1024, 0.7);
+      const imageBase64 = compressed.split(",")[1];
+
       const data = await predictImagePrice({
         imageBase64,
-        mimeType: file.type || "image/jpeg",
+        mimeType: "image/jpeg",
       });
       toast.success(`Estimated Price from Image: ₹${data.price.toLocaleString("en-IN")}`, { id: toastId, duration: 8000 });
     } catch (error: any) {

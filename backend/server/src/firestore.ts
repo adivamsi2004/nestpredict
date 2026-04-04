@@ -3,6 +3,7 @@ import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import fs from "node:fs";
 
 let cached: Firestore | null | undefined;
+const memoryCache: PropertyRecord[] = [];
 
 export function getDb(): Firestore | null {
   if (cached !== undefined) return cached;
@@ -63,19 +64,40 @@ export async function addProperty(input: PropertyInput): Promise<PropertyRecord>
     id: Date.now(),
     createdAt: new Date().toISOString(),
   };
+
+  // Always add to memory cache as universal fallback for the current process
+  memoryCache.push(record);
+
   const db = getDb();
   if (db) {
-    await db.collection("properties").add(record);
+    try {
+      await db.collection("properties").add(record);
+    } catch (e) {
+      console.warn("[api] Firestore write failed (auth?), but property is saved in memory cache.", e);
+    }
+  } else {
+    console.warn("[api] Firestore disabled: property is only in memory cache.");
   }
   return record;
 }
 
 export async function getProperties(): Promise<PropertyRecord[]> {
   const db = getDb();
-  if (!db) return [];
-  const q = db.collection("properties").orderBy("id", "desc");
-  const snapshot = await q.get();
-  return snapshot.docs.map((doc) => doc.data() as PropertyRecord);
+  if (!db) return memoryCache;
+
+  try {
+    const q = db.collection("properties").orderBy("id", "desc");
+    const snapshot = await q.get();
+    const dbResults = snapshot.docs.map((doc) => doc.data() as PropertyRecord);
+    
+    // Merge memory cache with DB results, uniquely by ID
+    const all = [...memoryCache, ...dbResults];
+    const unique = Array.from(new Map(all.map(p => [p.id, p])).values());
+    return unique.sort((a, b) => b.id - a.id);
+  } catch (e) {
+    console.warn("[api] Firestore read failed, returning memory cache only.", e);
+    return memoryCache;
+  }
 }
 
 /* ——— Contact helpers ——— */

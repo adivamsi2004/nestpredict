@@ -56,15 +56,20 @@ function geminiKey(): string {
 
 app.get("/health", (_req, res) => {
   const db = getDb();
-  res.json({ 
+    res.json({ 
     status: "ok",
-    database: db ? "connected" : "disconnected (missing credentials)"
+    database: db ? "connected" : "disconnected (missing credentials)",
+    env: {
+      openrouter: !!process.env.OPENROUTER_API_KEY,
+      gemini: !!process.env.GEMINI_API_KEY
+    }
   });
 });
 
 /* ——— AI Prediction routes ——— */
 
 app.post("/api/predict-price", async (req, res) => {
+  console.log("[api] POST /api/predict-price", req.body?.location);
   try {
     const out = await runPredictPrice(req.body as PredictPayload, openRouterEnv(), getDb());
     res.json(out);
@@ -113,8 +118,17 @@ app.get("/api/properties", async (_req, res) => {
 app.post("/api/properties", async (req, res) => {
   try {
     const input = req.body as PropertyInput;
+    console.log("[api] POST /api/properties", input.title);
+    
     if (!input.title || !input.type || !input.location || !input.price || !input.image) {
-      res.status(400).json({ error: "title, type, location, price, and image are required." });
+      console.warn("[api] Missing fields in addProperty:", { 
+        title: !!input.title, 
+        type: !!input.type, 
+        location: !!input.location, 
+        price: !!input.price, 
+        image: !!input.image 
+      });
+      res.status(400).json({ error: "Title, Type, Location, Price, and Image are all required." });
       return;
     }
     const record = await addProperty(input);
