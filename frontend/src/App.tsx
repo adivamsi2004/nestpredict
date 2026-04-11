@@ -12,8 +12,10 @@ import ContactPage from "./pages/ContactPage";
 import PropertiesPage from "./pages/PropertiesPage";
 import ListPropertyPage from "./pages/ListPropertyPage";
 import NotFound from "./pages/NotFound";
+import InstallPWA from "@/components/InstallPWA";
 
 import ScrollToTop from "@/components/ScrollToTop";
+
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <InstallPWA />
         <div className="flex min-h-screen flex-col">
           <Navbar />
           <main className="flex-1">
@@ -40,6 +43,7 @@ const App = () => (
           <Footer />
         </div>
       </BrowserRouter>
+
     </TooltipProvider>
   </QueryClientProvider>
 );

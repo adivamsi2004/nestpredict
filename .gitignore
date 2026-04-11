@@ -34,16 +34,6 @@ backend/.env
 firebase_service_account.json
 firebase_service_account.json.json
 backend/server/.env
-<<<<<<< HEAD
-*.json
-!package.json
-!tsconfig.json
-!components.json
-!vercel.json
-!firebase.json
-!firestore.indexes.json
-!package-lock.json
-
 # Exclude sensitive files explicitly
 service-account.json
 backend/server/service-account.json
@@ -53,5 +43,17 @@ node_modules
 **/node_modules
 dist
 **/dist
-=======
->>>>>>> e9879e7d68479f42cf0d00279d8993364e67d879
+dev-dist
+**/dev-dist
+
+# JSON files
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!components.json
+!vercel.json
+!firebase.json
+!firestore.indexes.json
+!manifest.json
+
