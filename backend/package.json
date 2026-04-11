@@ -1,0 +1,9 @@
+{
+  "name": "house-price-pro-backend",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix server",
+    "start": "npm run start --prefix server",
+    "build": "npm run build --prefix server"
+  }
+}

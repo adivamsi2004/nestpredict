@@ -1,0 +1,54 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+frontend/node_modules
+frontend/dist
+frontend/dist-ssr
+backend/server/node_modules
+backend/server/dist
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment & API keys
+.env
+frontend/.env
+backend/.env
+.env.local
+.env.*.local
+firebase_service_account.json
+firebase_service_account.json.json
+backend/server/.env
+*.json
+!package.json
+!tsconfig.json
+!components.json
+!vercel.json
+!firebase.json
+!firestore.indexes.json
+!package-lock.json
+
+# Exclude sensitive files explicitly
+service-account.json
+backend/server/service-account.json
+.firebase
+.vercel
+node_modules
+**/node_modules
+dist
+**/dist

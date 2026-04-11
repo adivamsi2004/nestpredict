@@ -1,0 +1,156 @@
+# NestPredict (Firebase + Firestore)
+
+NestPredict is a React + Vite app for:
+- AI-assisted house price prediction
+- image-based property valuation
+- property listing and browsing
+- contact message capture
+
+The project now uses Firebase as the backend platform:
+- **Cloud Firestore** for properties, prediction history, and contact messages
+- **Firebase Cloud Functions** for secure Gemini AI calls
+
+## Tech Stack
+
+- Frontend: React, TypeScript, Vite, Tailwind
+- Backend platform: Firebase Functions (TypeScript)
+- Database: Cloud Firestore
+- AI: Gemini (`gemini-1.5-flash`)
+
+## Project Structure
+
+- `frontend/` - React + Vite frontend
+- `frontend/src/lib/firebase.ts` - Firebase app init
+- `frontend/src/lib/firestore.ts` - Firestore reads/writes
+- `frontend/src/lib/functions.ts` - callable Cloud Functions client
+- `backend/functions/` - Firebase Cloud Functions source
+- `backend/firestore.rules` - Firestore security rules
+- `backend/firestore.indexes.json` - Firestore indexes
+- `backend/firebase.json` - Firebase project config
+
+## 1) Prerequisites
+
+- Node.js 20+
+- Firebase project created in [Firebase Console](https://console.firebase.google.com/)
+- Firebase CLI installed globally:
+
+```bash
+npm install -g firebase-tools
+```
+
+## 2) Frontend Environment Variables
+
+Copy `frontend/.env.example` to `frontend/.env` and fill values:
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+Required vars:
+
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+- `VITE_FIREBASE_FUNCTIONS_REGION` (default `us-central1`)
+
+## 3) Firebase Setup
+
+1. Login:
+
+```bash
+firebase login
+```
+
+2. Set your Firebase project id in `backend/.firebaserc`:
+
+```json
+{
+  "projects": {
+    "default": "your-firebase-project-id"
+  }
+}
+```
+
+3. Deploy Firestore rules and indexes:
+
+```bash
+cd backend
+firebase deploy --only firestore
+```
+
+## 4) Cloud Functions Setup
+
+Install dependencies and build:
+
+```bash
+cd backend/functions
+npm install
+npm run build
+```
+
+Set Gemini secret:
+
+```bash
+cd ../
+firebase functions:secrets:set GEMINI_API_KEY
+```
+
+Deploy functions:
+
+```bash
+firebase deploy --only functions
+```
+
+## 5) Run Frontend Locally
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## 6) Deployment Notes (Vercel + Firebase)
+
+- Deploy frontend to Vercel.
+- Add all `VITE_FIREBASE_*` vars in Vercel project settings.
+- Deploy Firestore and Functions from your local machine/CI using Firebase CLI.
+
+## Firestore Collections
+
+### `properties`
+- `id: number`
+- `title: string`
+- `type: string`
+- `location: string`
+- `price: number`
+- `bedrooms: number`
+- `bathrooms: number`
+- `area: number`
+- `image: string` (URL or base64 data URL)
+- `description?: string`
+- `createdAt: string` (ISO date)
+
+### `price_predictions`
+- `timestamp: string`
+- `property_details: object` (for text/assess predictions)
+- `predicted_price_inr: number`
+- `source: string`
+- `kind: "form" | "image" | "assess"`
+
+### `contact_messages`
+- `name: string`
+- `email: string`
+- `message: string`
+- `createdAt: string`
+
+## Callable Functions
+
+- `predictPrice`
+- `predictImagePrice`
+- `assessProperty`
+- `addProperty`
+- `getProperties`
+- `submitContact`
